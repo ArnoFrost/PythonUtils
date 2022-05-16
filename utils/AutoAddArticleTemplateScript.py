@@ -36,12 +36,12 @@ def traverse_dir(current_dir, deep=0):
             print("\t" * deep, "|--", dir)
 
 
-def zip(file_path, dst_path):
-    zFile = zipfile.ZipFile(file_path, "r")
+def zip_file(file_path, dst_path):
+    z_file = zipfile.ZipFile(file_path, "r")
     # ZipFile.namelist(): 获取ZIP文档内所有文件的名称列表
-    for fileM in zFile.namelist():
-        zFile.extract(fileM, dst_path)
-    zFile.close()
+    for fileM in z_file.namelist():
+        z_file.extract(fileM, dst_path)
+    z_file.close()
 
 
 # script, from_file, to_file = argv
@@ -52,6 +52,7 @@ pattern = re.compile(r'\d.\d.\d{2}')
 version_number = pattern.findall(download_url)[0]
 print("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # 模板根目录
+rebase_branch_name = "devTrunk"
 tempRoot = "/Users/xuxin14/Desktop/Temp"
 # 替换根目录
 projectRoot = "/Users/xuxin14/Desktop/SinaProjects/SinaNews的副本"
@@ -72,7 +73,7 @@ wget.download(download_url, out=php_name)
 
 os.rename(php_name, zip_name)
 # 2.2 解压文件
-zip(zip_name, from_file)
+zip_file(zip_name, from_file)
 # 3.复制文件
 print("执行拷贝=============>\n")
 # 3.1 整理文件 移除多余文件
@@ -95,7 +96,13 @@ print("<=============拷贝结束\n")
 os.chdir(projectRoot)
 print("进入目录 当前 :")
 os.system('pwd')
-# 4.2 commit
+# 4.2 转换分支更新最新
+os.system('git fetch')
+os.system('git checkout features/xuxin14/article_temp_upgrade')
+os.system('git rebase %s' % rebase_branch_name)
+# 初步不添加危险操作
+# os.system('git push -f')
+# 4.3 执行提交
 os.system('git add .')
 os.system('git commit -m \"Feature: 升级正文Hb 模板 %s\"' % version_number)
 print("提交完毕")
