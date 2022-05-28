@@ -21,6 +21,9 @@ updateHb(){
    python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceTemplateScript.py $download_url $rebase_branch_name $project_root $temp_root
 }
 alias updatehb=updateHb
+
+eg:
+> $[project_root]/ updatehb [download_url]
 '''
 
 
