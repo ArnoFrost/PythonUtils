@@ -9,6 +9,17 @@ from sys import argv
 
 import wget
 
+# region zsh示例
+''' 
+updateHb(){
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/AutoAddArticleTemplateScript.py $1
+}
+alias updatehb=updateHb
+'''
+
+
+# endregion
+
 
 def zip_file(file_path, dst_path):
     z_file = zipfile.ZipFile(file_path, "r")
@@ -26,6 +37,7 @@ script, download_url = argv
 pattern = re.compile(r'\d.\d.\d{2}')
 version_number = pattern.findall(download_url)[0]
 print("地址是 %s ,版本号是 %s" % (download_url, version_number))
+# region 常量定义
 # 模板根目录
 rebase_branch_name = "devTrunk"
 tempRoot = "/Users/xuxin14/Desktop/Temp"
@@ -36,20 +48,25 @@ from_file = tempRoot + "/" + version_number + "/index"
 to_file = project_root + "/SinaNews/src/main/assets/article_v2"
 php_name = tempRoot + "/" + version_number + "/index.php"
 zip_name = tempRoot + "/" + version_number + "/index.zip"
-# 拷贝目录
+# endregion
 
-# 1. 下载文件准备目录
+# region 1.下载文件准备目录
+# 拷贝目录
 print("下载文件路径 %s" % php_name)
 print("模板目录是 " + tempRoot + ", 工程目录是 " + project_root + '\n')
 os.mkdir(tempRoot + "/" + version_number)
 wget.download(download_url, out=php_name)
-# 2.解压缩
+# endregion
+
+# region 2.解压缩
 # 2.1 修改文件名
 
 os.rename(php_name, zip_name)
 # 2.2 解压文件
 zip_file(zip_name, from_file)
-# 3.复制文件
+# endregion
+
+# region 3.复制文件
 print("\n执行拷贝=============>\n")
 # 3.1 整理文件 移除多余文件
 need_remove_file_path1 = from_file + '/' + version_number
@@ -65,8 +82,9 @@ print("移除文件=============> version.json \n")
 print("递归拷贝从 %s 到 %s" % (from_file, to_file) + '\n')
 shutil.copytree(from_file, to_file, dirs_exist_ok=True)
 print("<=============拷贝结束\n")
+# endregion
 
-# 4.git commit
+# region 4.git commit
 # 4.1 进入到指定目录
 os.chdir(project_root)
 print("进入目录 当前 :")
@@ -81,3 +99,4 @@ os.system('git rebase %s' % rebase_branch_name)
 os.system('git add .')
 os.system('git commit -m \"Feature: 升级正文Hb 模板 %s\"' % version_number)
 print("提交完毕")
+# endregion

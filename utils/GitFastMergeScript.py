@@ -4,7 +4,28 @@
 import os
 from sys import argv
 
+# region zsh示例
+'''
+fastMerge(){
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/GitFastMergeScript.py $1 $2
+}
+alias fastmerge=fastMerge
 
+#快速merge 原版
+fastMegeO(){
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/GitFastMergeScript.py /Users/xuxin14/Desktop/SinaProjects/SinaNews $1
+}
+alias fmo=fastMegeO
+
+#快速merge 副本
+fastMergeC(){
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/GitFastMergeScript.py /Users/xuxin14/Desktop/SinaProjects/SinaNews的副本 $1
+}
+alias fmc=fastMergeC
+'''
+
+
+# endregion
 # execute command, and return the output
 def execCmd(cmd):
     r = os.popen(cmd)
@@ -14,37 +35,31 @@ def execCmd(cmd):
 
 
 # write "data" to file-filename
-def writeFile(filename, data):
-    f = open(filename, "w")
-    f.write(data)
-    f.close()
+# def writeFile(filename, data):
+#     f = open(filename, "w")
+#     f.write(data)
+#     f.close()
 
 
 script, project_path, need_merge_branch = argv
 
-# p_root = '/Users/xuxin14/Desktop/SinaProjects/'
-# normal_name = "SinaNews"
-# vice_name = "SinaNews的副本"
-# project_root = ''
-
-# # 判断路径
-# print(type(isVice))
-#
-# if isVice:
-#     project_root = p_root + vice_name
-# else:
-#     project_root = p_root + normal_name
-
+# region 准备工作
 # 进入目录
 os.chdir(project_path)
 print("进入目录 当前 :")
 os.system('pwd')
+# 更新仓库
+os.system('git fetch')
+# endregion
 
+# region 操作流程
 # 拿到当前分支名
-cur_branch_name = execCmd('git cur')
+cur_branch_name = execCmd('git symbolic-ref --short HEAD')
 print("获取分支名: %s" % cur_branch_name)
 
 # 切换分支
 os.system('git checkout %s' % need_merge_branch)
-os.system('git cur')
-os.system('git mergeno %s' % cur_branch_name)
+os.system('git symbolic-ref --short HEAD')
+# 禁用fast-forward
+os.system('git merge --no-ff %s' % cur_branch_name)
+# endregion
