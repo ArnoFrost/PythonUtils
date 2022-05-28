@@ -1,5 +1,6 @@
 # 自动放置模板脚本
 # !/usr/bin/env python
+# -*- coding:utf-8 -*-
 import os
 import re
 import shutil
@@ -18,6 +19,7 @@ def zip_file(file_path, dst_path):
 
 
 # script, from_file, to_file = argv
+# download_url = argv
 script, download_url = argv
 # download_url = "http://mjs.sinaimg.cn//wap/project/snal_v2/7.3.63/index/index.php"
 # version_number = re.match("\d.\d.\d{2}", download_url)
@@ -48,7 +50,7 @@ os.rename(php_name, zip_name)
 # 2.2 解压文件
 zip_file(zip_name, from_file)
 # 3.复制文件
-print("执行拷贝=============>\n")
+print("\n执行拷贝=============>\n")
 # 3.1 整理文件 移除多余文件
 need_remove_file_path1 = from_file + '/' + version_number
 need_remove_file_path2 = from_file + "/version.json"
