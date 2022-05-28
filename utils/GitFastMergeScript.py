@@ -7,7 +7,10 @@ from sys import argv
 # region zsh示例
 '''
 fastMerge(){
-   python /Users/xuxin14/PycharmProjects/pythonProject/utils/GitFastMergeScript.py $1 $2
+   need_merge_branch=$1
+   project_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+   # echo "当前工作目录 :$project_path "
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/GitFastMergeScript.py $project_path $need_merge_branch
 }
 alias fastmerge=fastMerge
 
@@ -44,11 +47,13 @@ def execCmd(cmd):
 script, project_path, need_merge_branch = argv
 
 # region 准备工作
+print("快速合并脚本 需要合并分支 %s " % need_merge_branch)
 # 进入目录
 os.chdir(project_path)
 print("进入目录 当前 :")
 os.system('pwd')
 # 更新仓库
+print("更新仓库")
 os.system('git fetch')
 # endregion
 
