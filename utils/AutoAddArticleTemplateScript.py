@@ -30,17 +30,17 @@ print("地址是 %s ,版本号是 %s" % (download_url, version_number))
 rebase_branch_name = "devTrunk"
 tempRoot = "/Users/xuxin14/Desktop/Temp"
 # 替换根目录
-projectRoot = "/Users/xuxin14/Desktop/SinaProjects/SinaNews的副本"
+project_root = "/Users/xuxin14/Desktop/SinaProjects/SinaNews的副本"
 # 定义常量
 from_file = tempRoot + "/" + version_number + "/index"
-to_file = projectRoot + "/SinaNews/src/main/assets/article_v2"
+to_file = project_root + "/SinaNews/src/main/assets/article_v2"
 php_name = tempRoot + "/" + version_number + "/index.php"
 zip_name = tempRoot + "/" + version_number + "/index.zip"
 # 拷贝目录
 
 # 1. 下载文件准备目录
 print("下载文件路径 %s" % php_name)
-print("模板目录是 " + tempRoot + ", 工程目录是 " + projectRoot + '\n')
+print("模板目录是 " + tempRoot + ", 工程目录是 " + project_root + '\n')
 os.mkdir(tempRoot + "/" + version_number)
 wget.download(download_url, out=php_name)
 # 2.解压缩
@@ -68,7 +68,7 @@ print("<=============拷贝结束\n")
 
 # 4.git commit
 # 4.1 进入到指定目录
-os.chdir(projectRoot)
+os.chdir(project_root)
 print("进入目录 当前 :")
 os.system('pwd')
 # 4.2 转换分支更新最新
