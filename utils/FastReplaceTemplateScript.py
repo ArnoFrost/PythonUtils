@@ -46,7 +46,7 @@ def zip_file(file_path, dst_path):
 
 script, download_url, rebase_branch_name, project_root, temp_root = argv
 # version_number = re.match("\d.\d.\d{2}", download_url)
-pattern = re.compile(r'\d.\d.\d{2}')
+pattern = re.compile(r'\d\.\d\.\d+')
 version_number = pattern.findall(download_url)[0]
 print("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # region 常量定义
