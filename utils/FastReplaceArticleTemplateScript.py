@@ -18,7 +18,7 @@ updateHb(){
    download_url=$1
    rebase_branch_name="devTrunk"
    temp_root="/Users/xuxin14/Desktop/Temp"
-   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceTemplateScript.py $download_url $rebase_branch_name $project_root $temp_root
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceArticleTemplateScript.py $download_url $rebase_branch_name $project_root $temp_root
 }
 alias updatehb=updateHb
 
