@@ -56,8 +56,8 @@ print("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # 替换根目录
 # project_root = "/Users/xuxin14/Desktop/SinaProjects/SinaNews的副本"
 # 定义常量
-from_file = temp_root + "/" + version_number + "/index"
-to_file = project_root + "/SinaNews/src/main/assets/article_v2"
+src_file = temp_root + "/" + version_number + "/index"
+dst_file = project_root + "/SinaNews/src/main/assets/article_v2"
 php_name = temp_root + "/" + version_number + "/index.php"
 zip_name = temp_root + "/" + version_number + "/index.zip"
 # endregion
@@ -75,24 +75,24 @@ wget.download(download_url, out=php_name)
 
 os.rename(php_name, zip_name)
 # 2.2 解压文件
-zip_file(zip_name, from_file)
+zip_file(zip_name, src_file)
 # endregion
 
 # region 3.复制文件
 print("\n执行拷贝=============>\n")
 # 3.1 整理文件 移除多余文件
-need_remove_file_path1 = from_file + '/' + version_number
-need_remove_file_path2 = from_file + "/version.json"
-# traverse_dir(from_file, 1)
+need_remove_file_path1 = src_file + '/' + version_number
+need_remove_file_path2 = src_file + "/version.json"
+# traverse_dir(src_file, 1)
 os.remove(need_remove_file_path1)
 print("移除文件=============>" + version_number + '\n')
 os.remove(need_remove_file_path2)
 print("移除文件=============> version.json \n")
-# traverse_dir(from_file, 1)
+# traverse_dir(src_file, 1)
 
 # 3.2 复制文件
-print("递归拷贝从 %s 到 %s" % (from_file, to_file) + '\n')
-shutil.copytree(from_file, to_file, dirs_exist_ok=True)
+print("递归拷贝从 %s 到 %s" % (src_file, dst_file) + '\n')
+shutil.copytree(src_file, dst_file, dirs_exist_ok=True)
 print("<=============拷贝结束\n")
 # endregion
 
