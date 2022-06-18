@@ -17,7 +17,7 @@ FastReplaceDrawable(){
    project_root=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
    drawable_name=$1
    drawable_root="/Users/xuxin14/Desktop/DrawableMerge"
-   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceDrawableScript.py $drawable_name $project_root $drawable_root
+   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceDrawableScript.py $drawable_name $drawable_root $project_root 
 }
 alias frd=FastReplaceDrawable
 
@@ -28,7 +28,7 @@ eg:
 
 # endregion
 
-script, drawable_name, project_root, drawable_root = argv
+script, drawable_name, drawable_root, project_root = argv
 print("替换的图标是 %s " % drawable_name)
 print("当前路径是 %s " % project_root)
 print("替换路径是 %s " % drawable_root)
@@ -53,17 +53,28 @@ to_file_2x_night = to_file + "/" + folder_2x
 # endregion
 
 # region 1. 重命名文件
-file = os.listdir(from_file_2x)[0]
-os.rename(file, drawable_name)
+try:
+    file = os.listdir(from_file_2x)[0]
+    print("找到2x 文件 %s " % file)
+    original_name = from_file_2x + "/" + file
+    need_file_name = from_file_2x + "/" + drawable_name
+    dst_file_name = to_file_2x + "/" + drawable_name
+    print("路径打印 %s " % original_name)
+    print("路径打印目的地 %s " % need_file_name)
+    os.rename(original_name, need_file_name)
+except Exception as e:
+    print("not find file %s" % e)
+else:
+    # file = from_file_2x_night + "/" + os.listdir(from_file_2x_night)[0]
+    # os.rename(file, drawable_name)
+    # endregion
 
-file = os.listdir(from_file_2x_night)[0]
-os.rename(file, drawable_name)
-# endregion
-
-# region 2. 强制替换
-shutil.copyfile(from_file_2x, to_file_2x)
-shutil.copyfile(from_file_2x_night, to_file_2x_night)
-# endregion
-
-
-print("复制完毕")
+    # region 2. 强制替换
+    try:
+        shutil.copyfile(need_file_name, dst_file_name)
+    except Exception as e:
+        print("copy failed %s" % e)
+    # shutil.copyfile(from_file_2x_night, to_file_2x_night)
+    # endregion
+    else:
+        print("复制完毕")
