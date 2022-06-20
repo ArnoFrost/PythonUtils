@@ -69,13 +69,26 @@ drawableList.append(DrawableFolder(src_file_2x_night, dst_file_2x_night))
 drawableList.append(DrawableFolder(src_file_3x, dst_file_3x))
 drawableList.append(DrawableFolder(src_file_3x_night, dst_file_3x_night))
 
+
 # endregion
+def search(listdir, suffix):
+    for filename in listdir:
+        if filename.endswith(suffix):
+            print("找到原文件名 %s" % filename)
+            return filename
+        else:
+            continue
+    return
+
+
+def search_first_image_file(path):
+    return search(path, ".png")
 
 
 for i, folder in enumerate(drawableList):
     # region 1. 重命名文件
     try:
-        file = os.listdir(folder.src_file)[0]
+        file = search_first_image_file(os.listdir(folder.src_file))
         print("找到文件 %s " % file)
         original_name = folder.src_file + "/" + file
         need_file_name = folder.src_file + "/" + drawable_name
