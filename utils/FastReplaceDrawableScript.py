@@ -22,17 +22,21 @@ eg:
 > $[project_root]/ fad [drawable_name]
 '''
 
-
 # endregion
+version_name = "1.0"
+print("\033[32m>>>>>>>Drawable资源替换脚本 %s>>>>>>>\033[0m" % version_name)
 
 
 class DrawableFolder:
     src_file = ""
     dst_file = ""
+    # 1 xhdpi 2 xxhdpi 3 night-xhdpi 4 night-xxhdpi
+    type = 1
 
-    def __init__(self, src_file, dst_file):
+    def __init__(self, src_file, dst_file, type):
         self.src_file = src_file
         self.dst_file = dst_file
+        self.type = type
 
 
 script, drawable_name, drawable_root, project_root = argv
@@ -64,17 +68,17 @@ dst_file_3x_night = dst_file_root + "/" + folder_3x_night
 
 
 drawableList = list[DrawableFolder]()
-drawableList.append(DrawableFolder(src_file_2x, dst_file_2x))
-drawableList.append(DrawableFolder(src_file_2x_night, dst_file_2x_night))
-drawableList.append(DrawableFolder(src_file_3x, dst_file_3x))
-drawableList.append(DrawableFolder(src_file_3x_night, dst_file_3x_night))
+drawableList.append(DrawableFolder(src_file_2x, dst_file_2x, 1))
+drawableList.append(DrawableFolder(src_file_2x_night, dst_file_2x_night, 3))
+drawableList.append(DrawableFolder(src_file_3x, dst_file_3x, 2))
+drawableList.append(DrawableFolder(src_file_3x_night, dst_file_3x_night, 4))
 
 
 # endregion
 def search(listdir, suffix):
     for filename in listdir:
         if filename.endswith(suffix):
-            print("找到原文件名 %s" % filename)
+            # print("找到原文件名 %s" % filename)
             return filename
         else:
             continue
@@ -85,22 +89,32 @@ def search_first_image_file(path):
     return search(path, ".png")
 
 
+def get_type_string(drawable_type):
+    if drawable_type == 1:
+        return folder_2x
+    elif drawable_type == 2:
+        return folder_3x
+    elif drawable_type == 3:
+        return folder_2x_night
+    elif drawable_type == 4:
+        return folder_3x_night
+    else:
+        return "unknown"
+
+
 for i, folder in enumerate(drawableList):
     # region 1. 重命名文件
     try:
         file = search_first_image_file(os.listdir(folder.src_file))
-        print("找到文件 %s " % file)
         original_name = folder.src_file + "/" + file
         need_file_name = folder.src_file + "/" + drawable_name
         dst_file_name = folder.dst_file + "/" + drawable_name
         # print("路径打印 %s " % original_name)
         # print("路径打印目的地 %s " % need_file_name)
         os.rename(original_name, need_file_name)
-    # except FileNotFoundError:
-    #     print("\033[33m未找到文件相应目录文件 %s ,忽略\033[0m" % folder.src_file)
-    #     continue
+        print("找到文件 %s " % file)
     except Exception as e:
-        print("\033[33m未找到文件相应目录文件 %s ,忽略\033[0m" % folder.src_file)
+        print("\033[33m%s 未找到对应文件 忽略\033[0m" % get_type_string(folder.type))
         continue
     # endregion
     # region 2. 强制替换
@@ -116,3 +130,4 @@ for i, folder in enumerate(drawableList):
             # 替换后自动重命名
             os.rename(need_file_name, need_file_name + ".old")
     # endregion
+print("\033[32m<<<<<<<Drawable资源替换脚本 执行结束 %s<<<<<<<\033[0m" % version_name)
