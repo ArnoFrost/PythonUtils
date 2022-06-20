@@ -96,11 +96,11 @@ for i, folder in enumerate(drawableList):
         # print("路径打印 %s " % original_name)
         # print("路径打印目的地 %s " % need_file_name)
         os.rename(original_name, need_file_name)
-    except FileNotFoundError:
-        print("未找到文件相应目录文件 %s ,忽略" % folder.src_file)
-        continue
+    # except FileNotFoundError:
+    #     print("\033[33m未找到文件相应目录文件 %s ,忽略\033[0m" % folder.src_file)
+    #     continue
     except Exception as e:
-        print("未找到文件 %s" % e)
+        print("\033[33m未找到文件相应目录文件 %s ,忽略\033[0m" % folder.src_file)
         continue
     # endregion
     # region 2. 强制替换
@@ -109,9 +109,10 @@ for i, folder in enumerate(drawableList):
             print("执行替换 %s" % dst_file_name)
             shutil.copyfile(need_file_name, dst_file_name)
         except Exception as e:
-            print("拷贝失败 %s" % e)
+            print("\033[31m拷贝失败 %s\033[0m" % e)
             continue
         else:
-            print("替换图标素材完毕")
-
+            print("\033[32m替换图标素材完毕\033[0m")
+            # 替换后自动重命名
+            os.rename(need_file_name, need_file_name + ".old")
     # endregion
