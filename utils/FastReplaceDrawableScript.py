@@ -23,7 +23,7 @@ eg:
 '''
 
 # endregion
-version_name = "1.0"
+version_name = "1.01"
 print("\033[32m>>>>>>>Drawable资源替换脚本 %s>>>>>>>\033[0m" % version_name)
 
 
@@ -44,6 +44,22 @@ print("替换的图标是 %s " % drawable_name)
 print("当前路径是 %s " % project_root)
 print("替换路径是 %s " % drawable_root)
 # region 常量定义
+
+drawable_dict = {
+    1: "drawable-xhdpi",
+    2: "drawable-xxhdpi",
+    3: "drawable-night-xhdpi",
+    4: "drawable-night-xxhdpi",
+}
+
+
+def get_type_string(drawable_type):
+    """
+    将drawable映射为字符串
+    :param drawable_type:
+    :return:
+    """
+    return drawable_dict.get(drawable_type, "Invalid DrawableType")
 # 定义常量
 folder_2x = "drawable-xhdpi"
 folder_2x_night = 'drawable-night-xhdpi'
@@ -87,19 +103,6 @@ def search(listdir, suffix):
 
 def search_first_image_file(path):
     return search(path, ".png")
-
-
-def get_type_string(drawable_type):
-    if drawable_type == 1:
-        return folder_2x
-    elif drawable_type == 2:
-        return folder_3x
-    elif drawable_type == 3:
-        return folder_2x_night
-    elif drawable_type == 4:
-        return folder_3x_night
-    else:
-        return "unknown"
 
 
 for i, folder in enumerate(drawableList):
