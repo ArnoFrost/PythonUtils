@@ -3,7 +3,7 @@
 # -*- coding:utf-8 -*-
 import os
 from sys import argv
-
+import utils.ColorUtil as logUtil
 # region zsh示例
 '''
 fastMerge(){
@@ -47,20 +47,20 @@ def execCmd(cmd):
 script, project_path, need_merge_branch = argv
 
 # region 准备工作
-print("快速合并脚本 需要合并分支 %s " % need_merge_branch)
+logUtil.logv("快速合并脚本 需要合并分支 %s " % need_merge_branch)
 # 进入目录
 os.chdir(project_path)
-print("进入目录 当前 :")
+logUtil.logi("进入目录 当前 :")
 os.system('pwd')
 # 更新仓库
-print("更新仓库")
+logUtil.logi("更新仓库")
 os.system('git fetch')
 # endregion
 
 # region 操作流程
 # 拿到当前分支名
 cur_branch_name = execCmd('git symbolic-ref --short HEAD')
-print("获取分支名: %s" % cur_branch_name)
+logUtil.logi("获取分支名: %s" % cur_branch_name)
 
 # 切换分支
 os.system('git checkout %s' % need_merge_branch)

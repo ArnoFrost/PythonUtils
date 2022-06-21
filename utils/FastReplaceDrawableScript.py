@@ -5,6 +5,9 @@ import os
 import shutil
 from sys import argv
 
+from ScriptDefine import print_script_message_start, print_script_message_end, \
+    __fast_merge_name__, __fast_merge_version__
+import utils.ColorUtil as logUtil
 # region zsh示例
 ''' 
 FastReplaceDrawable(){
@@ -23,9 +26,8 @@ eg:
 '''
 
 # endregion
-version_name = "1.02"
 default_suffix = ".png"
-print("\033[32m>>>>>>>Drawable资源替换脚本 %s>>>>>>>\033[0m" % version_name)
+print_script_message_start(__fast_merge_name__, __fast_merge_version__)
 
 
 class DrawableFolder:
@@ -41,13 +43,13 @@ class DrawableFolder:
 
 
 script, drawable_name, drawable_root, project_root = argv
-print("替换的图标是 %s " % drawable_name)
+logUtil.logi("替换的图标是 %s " % drawable_name)
 # 自动补齐png格式
 if not str(drawable_name).endswith(default_suffix):
     drawable_name = drawable_name + default_suffix
-    print("自动补全名称 %s " % drawable_name)
-print("当前路径是 %s " % project_root)
-print("替换路径是 %s " % drawable_root)
+    logUtil.logi("自动补全名称 %s " % drawable_name)
+logUtil.logi("当前路径是 %s " % project_root)
+logUtil.logi("替换路径是 %s " % drawable_root)
 # region 常量定义
 
 drawable_dict = {
@@ -122,22 +124,22 @@ for i, folder in enumerate(drawableList):
         # print("路径打印 %s " % original_name)
         # print("路径打印目的地 %s " % need_file_name)
         os.rename(original_name, need_file_name)
-        print("找到文件 %s " % file)
+        logUtil.logi("找到文件 %s " % file)
     except Exception as e:
-        print("\033[33m%s 未找到对应文件 忽略\033[0m" % get_type_string(folder.type))
+        logUtil.logw("%s 未找到对应文件 忽略" % get_type_string(folder.type))
         continue
     # endregion
     # region 2. 强制替换
     else:
         try:
-            print("执行替换 %s" % dst_file_name)
+            logUtil.logi("执行替换 %s" % dst_file_name)
             shutil.copyfile(need_file_name, dst_file_name)
         except Exception as e:
-            print("\033[31m拷贝失败 %s\033[0m" % e)
+            logUtil.loge("拷贝失败 %s" % e)
             continue
         else:
-            print("\033[32m替换图标素材完毕\033[0m")
+            logUtil.logd("替换图标素材完毕")
             # 替换后自动重命名
             os.rename(need_file_name, need_file_name + ".old")
     # endregion
-print("\033[32m<<<<<<<Drawable资源替换脚本 执行结束 %s<<<<<<<\033[0m" % version_name)
+print_script_message_end(__fast_merge_name__, __fast_merge_version__)
