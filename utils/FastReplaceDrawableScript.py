@@ -23,7 +23,8 @@ eg:
 '''
 
 # endregion
-version_name = "1.01"
+version_name = "1.02"
+default_suffix = ".png"
 print("\033[32m>>>>>>>Drawable资源替换脚本 %s>>>>>>>\033[0m" % version_name)
 
 
@@ -41,6 +42,10 @@ class DrawableFolder:
 
 script, drawable_name, drawable_root, project_root = argv
 print("替换的图标是 %s " % drawable_name)
+# 自动补齐png格式
+if not str(drawable_name).endswith(default_suffix):
+    drawable_name = drawable_name + default_suffix
+    print("自动补全名称 %s " % drawable_name)
 print("当前路径是 %s " % project_root)
 print("替换路径是 %s " % drawable_root)
 # region 常量定义
@@ -60,6 +65,8 @@ def get_type_string(drawable_type):
     :return:
     """
     return drawable_dict.get(drawable_type, "Invalid DrawableType")
+
+
 # 定义常量
 folder_2x = "drawable-xhdpi"
 folder_2x_night = 'drawable-night-xhdpi'
@@ -102,7 +109,7 @@ def search(listdir, suffix):
 
 
 def search_first_image_file(path):
-    return search(path, ".png")
+    return search(path, default_suffix)
 
 
 for i, folder in enumerate(drawableList):
