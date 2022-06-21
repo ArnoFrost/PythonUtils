@@ -29,6 +29,14 @@ def logd(log_str: str):
     print_log_by_color(Color.BLUE, log_str)
 
 
+def log_start(version_name: str, version_number: str):
+    logv(">>>>>>>Welcome Arno工具集 : 执行%s-版本:%s<<<<<<<" % (version_name, version_number))
+
+
+def log_end(version_name: str, version_number: str):
+    logv(">>>>>>>执行%s完毕-版本:%s<<<<<<<" % (version_name, version_number))
+
+
 def print_log_by_color(color_enum: Color, log_str: str):
     color_prefix = get_color_prefix(color_enum)
     color_suffix = "\033[0m"

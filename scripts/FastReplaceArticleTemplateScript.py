@@ -11,7 +11,11 @@ import wget
 
 # region zsh示例
 import ColorfulLog as logUtil
-
+# region 定义描述日志
+__name__ = "Hb模板替换工具"
+__version__ = "1.0.1"
+logUtil.log_start(__name__, __version__)
+# endregion
 ''' 
 updateHb(){
    # download_url = "http://mjs.sinaimg.cn//wap/project/snal_v2/7.3.63/index/index.php"
@@ -50,7 +54,6 @@ script, download_url, rebase_branch_name, project_root, temp_root = argv
 # version_number = re.match("\d.\d.\d{2}", download_url)
 pattern = re.compile(r'\d\.\d\.\d+')
 version_number = pattern.findall(download_url)[0]
-# print_script_message_start(__article_temp_name__, __article_temp_version__)
 logUtil.logv("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # region 常量定义
 # 模板根目录
@@ -67,8 +70,8 @@ zip_name = temp_root + "/" + version_number + "/index.zip"
 
 # region 1.下载文件准备目录
 # 拷贝目录
-logUtil.logv("下载文件路径 %s" % php_name)
-logUtil.logv("模板目录是 " + temp_root + ", 工程目录是 " + project_root + '\n')
+logUtil.logd("下载文件路径 %s" % php_name)
+logUtil.logd("模板目录是 " + temp_root + ", 工程目录是 " + project_root + '\n')
 try:
     os.mkdir(temp_root + "/" + version_number)
     wget.download(download_url, out=php_name)
@@ -103,7 +106,7 @@ else:
             # 3.2 复制文件
             logUtil.logi("递归拷贝从 %s 到 %s" % (src_file, dst_file) + '\n')
             shutil.copytree(src_file, dst_file, dirs_exist_ok=True)
-            logUtil.logv("<=============拷贝结束\n")
+            logUtil.logd("<=============拷贝结束\n")
         except Exception as e:
             logUtil.loge("步骤3 执行发生问题 终止 %s " % e)
         else:
@@ -129,6 +132,5 @@ else:
             except Exception as e:
                 logUtil.loge("步骤3 执行发生问题 终止 %s " % e)
             else:
-                # print_script_message_end(__article_temp_name__, __article_temp_version__)
-                logUtil.logv("执行完毕")
+                logUtil.log_end(__name__, __version__)
     # endregion

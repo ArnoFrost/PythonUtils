@@ -4,8 +4,13 @@
 import os
 from sys import argv
 import ColorfulLog as logUtil
-# region zsh示例
 
+# region 定义描述日志
+__name__ = "git快速合并替换工具"
+__version__ = "1.0.1"
+logUtil.log_start(__name__, __version__)
+# endregion
+# region zsh示例
 '''
 fastMerge(){
    need_merge_branch=$1
@@ -38,16 +43,7 @@ def execCmd(cmd):
     return text
 
 
-# write "data" to file-filename
-# def writeFile(filename, data):
-#     f = open(filename, "w")
-#     f.write(data)
-#     f.close()
-
-
 script, project_path, need_merge_branch = argv
-# print_script_message_start(__fast_merge_name__, __fast_merge_version__)
-
 # region 准备工作
 logUtil.logv("快速合并脚本 需要合并分支 %s " % need_merge_branch)
 # 进入目录
@@ -71,4 +67,4 @@ os.system('git symbolic-ref --short HEAD')
 os.system('git merge --no-ff %s' % cur_branch_name)
 # endregion
 
-# print_script_message_end(__fast_merge_name__, __fast_merge_version__)
+logUtil.log_end(__name__, __version__)

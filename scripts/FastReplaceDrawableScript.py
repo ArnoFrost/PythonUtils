@@ -7,6 +7,12 @@ from sys import argv
 
 import ColorfulLog as logUtil
 
+# region 定义描述日志
+__name__ = "资源替换工具"
+__version__ = "1.0.3"
+logUtil.log_start(__name__, __version__)
+# endregion
+
 # region zsh示例
 import ScriptDefine as versionDefine
 
@@ -26,11 +32,8 @@ eg:
 > $[project_root]/ fad [drawable_name]
 '''
 
+
 # endregion
-default_suffix = ".png"
-__drawable_version__ = "1.0.3"
-__drawable_name__ = "资源替换工具"
-# versionDefine.print_script_message_start(__drawable_name__, __drawable_version__)
 
 
 class DrawableFolder:
@@ -46,6 +49,7 @@ class DrawableFolder:
 
 
 script, drawable_name, drawable_root, project_root = argv
+default_suffix = ".png"
 logUtil.logi("替换的图标是 %s " % drawable_name)
 # 自动补齐png格式
 if not str(drawable_name).endswith(default_suffix):
@@ -145,4 +149,4 @@ for i, folder in enumerate(drawableList):
             # 替换后自动重命名
             os.rename(need_file_name, need_file_name + ".old")
     # endregion
-# versionDefine.print_script_message_end(__drawable_name__, __drawable_version__)
+logUtil.log_end(__name__, __version__)
