@@ -5,10 +5,11 @@ import os
 import shutil
 from sys import argv
 
-from ScriptDefine import print_script_message_start, print_script_message_end, \
-    __fast_merge_name__, __fast_merge_version__
-import utils.ColorUtil as logUtil
+import ColorfulLog as logUtil
+
 # region zsh示例
+import ScriptDefine as versionDefine
+
 ''' 
 FastReplaceDrawable(){
    # drawable_name = "arno_test.png"
@@ -16,7 +17,7 @@ FastReplaceDrawable(){
    project_root=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
    drawable_name=$1
    drawable_root="/Users/xuxin14/Desktop/DrawableMerge"
-   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceDrawableScript.py $drawable_name $drawable_root $project_root 
+   python /Users/xuxin14/PycharmProjects/pythonProject/scripts/FastReplaceDrawableScript.py $drawable_name $drawable_root $project_root 
 }
 alias frd=FastReplaceDrawable
 
@@ -27,7 +28,9 @@ eg:
 
 # endregion
 default_suffix = ".png"
-print_script_message_start(__fast_merge_name__, __fast_merge_version__)
+__drawable_version__ = "1.0.3"
+__drawable_name__ = "资源替换工具"
+# versionDefine.print_script_message_start(__drawable_name__, __drawable_version__)
 
 
 class DrawableFolder:
@@ -142,4 +145,4 @@ for i, folder in enumerate(drawableList):
             # 替换后自动重命名
             os.rename(need_file_name, need_file_name + ".old")
     # endregion
-print_script_message_end(__fast_merge_name__, __fast_merge_version__)
+# versionDefine.print_script_message_end(__drawable_name__, __drawable_version__)

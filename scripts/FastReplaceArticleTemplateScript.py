@@ -10,9 +10,7 @@ from sys import argv
 import wget
 
 # region zsh示例
-import utils.ColorUtil as logUtil
-from utils.ScriptDefine import print_script_message_start, __article_temp_name__, __article_temp_version__, \
-    print_script_message_end
+import ColorfulLog as logUtil
 
 ''' 
 updateHb(){
@@ -22,7 +20,7 @@ updateHb(){
    download_url=$1
    rebase_branch_name="devTrunk"
    temp_root="/Users/xuxin14/Desktop/Temp"
-   python /Users/xuxin14/PycharmProjects/pythonProject/utils/FastReplaceArticleTemplateScript.py $download_url $rebase_branch_name $project_root $temp_root
+   python /Users/xuxin14/PycharmProjects/pythonProject/scripts/FastReplaceArticleTemplateScript.py $download_url $rebase_branch_name $project_root $temp_root
 }
 alias updatehb=updateHb
 
@@ -52,7 +50,7 @@ script, download_url, rebase_branch_name, project_root, temp_root = argv
 # version_number = re.match("\d.\d.\d{2}", download_url)
 pattern = re.compile(r'\d\.\d\.\d+')
 version_number = pattern.findall(download_url)[0]
-print_script_message_start(__article_temp_name__, __article_temp_version__)
+# print_script_message_start(__article_temp_name__, __article_temp_version__)
 logUtil.logv("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # region 常量定义
 # 模板根目录
@@ -131,5 +129,6 @@ else:
             except Exception as e:
                 logUtil.loge("步骤3 执行发生问题 终止 %s " % e)
             else:
-                print_script_message_end(__article_temp_name__, __article_temp_version__)
+                # print_script_message_end(__article_temp_name__, __article_temp_version__)
+                logUtil.logv("执行完毕")
     # endregion
