@@ -13,7 +13,7 @@ import wget
 import ColorfulLog as logUtil
 # region 定义描述日志
 __name__ = "Hb模板替换工具"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 logUtil.log_start(__name__, __version__)
 # endregion
 ''' 
@@ -51,8 +51,7 @@ def zip_file(file_path, dst_path):
 
 
 script, download_url, rebase_branch_name, project_root, temp_root = argv
-# version_number = re.match("\d.\d.\d{2}", download_url)
-pattern = re.compile(r'\d\.\d\.\d+')
+pattern = re.compile('\d.\d.\d+-\w+?(?=/)')
 version_number = pattern.findall(download_url)[0]
 logUtil.logv("地址是 %s ,版本号是 %s" % (download_url, version_number))
 # region 常量定义
@@ -96,17 +95,26 @@ else:
             # 3.1 整理文件 移除多余文件
             need_remove_file_path1 = src_file + '/' + version_number
             need_remove_file_path2 = src_file + "/version.json"
+            need_remove_file_path3 = src_file + "/static/js/xss-filter.js"
+            need_remove_file_path4 = src_file + "/static/js/index.min.js"
             # traverse_dir(src_file, 1)
             os.remove(need_remove_file_path1)
             logUtil.logi("移除文件=============>" + version_number + '\n')
             os.remove(need_remove_file_path2)
             logUtil.logi("移除文件=============> version.json \n")
+            try:
+                os.remove(need_remove_file_path3)
+                logUtil.logi("移除文件=============> xss-filter.js \n")
+                os.remove(need_remove_file_path4)
+                logUtil.logi("移除文件=============> index.min.js \n")
+            except:
+                logUtil.logi("未找到xss index文件 \n")
             # traverse_dir(src_file, 1)
-
-            # 3.2 复制文件
-            logUtil.logi("递归拷贝从 %s 到 %s" % (src_file, dst_file) + '\n')
-            shutil.copytree(src_file, dst_file, dirs_exist_ok=True)
-            logUtil.logd("<=============拷贝结束\n")
+            else:
+                # 3.2 复制文件
+                logUtil.logi("递归拷贝从 %s 到 %s" % (src_file, dst_file) + '\n')
+                shutil.copytree(src_file, dst_file, dirs_exist_ok=True)
+                logUtil.logd("<=============拷贝结束\n")
         except Exception as e:
             logUtil.loge("步骤3 执行发生问题 终止 %s " % e)
         else:
