@@ -9,32 +9,32 @@ class Color(Enum):
     NORMAL = 5
 
 
-def logi(log_str: str):
+def i(log_str: str):
     print_log_by_color(Color.NORMAL, log_str)
 
 
-def logv(log_str: str):
+def v(log_str: str):
     print_log_by_color(Color.GREEN, log_str)
 
 
-def logw(log_str: str):
+def w(log_str: str):
     print_log_by_color(Color.YELLOW, log_str)
 
 
-def loge(log_str: str):
+def e(log_str: str):
     print_log_by_color(Color.RED, log_str)
 
 
-def logd(log_str: str):
+def d(log_str: str):
     print_log_by_color(Color.BLUE, log_str)
 
 
 def log_start(version_name: str, version_number: str):
-    logv(">>>>>>>Welcome Arno工具集 : 执行%s-版本:%s<<<<<<<" % (version_name, version_number))
+    v(">>>>>>>Welcome Arno工具集 : 执行%s-版本:%s<<<<<<<" % (version_name, version_number))
 
 
 def log_end(version_name: str, version_number: str):
-    logv(">>>>>>>执行%s完毕-版本:%s<<<<<<<" % (version_name, version_number))
+    v(">>>>>>>执行%s完毕-版本:%s<<<<<<<" % (version_name, version_number))
 
 
 def print_log_by_color(color_enum: Color, log_str: str):

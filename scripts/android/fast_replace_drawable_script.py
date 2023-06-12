@@ -5,7 +5,7 @@ import os
 import shutil
 from sys import argv
 
-import ColorfulLog as logUtil
+from utils import colorful_log as logUtil
 
 # region 定义描述日志
 __name__ = "资源替换工具"
@@ -14,8 +14,6 @@ logUtil.log_start(__name__, __version__)
 # endregion
 
 # region zsh示例
-import ScriptDefine as versionDefine
-
 ''' 
 FastReplaceDrawable(){
    # drawable_name = "arno_test.png"
@@ -23,7 +21,7 @@ FastReplaceDrawable(){
    project_root=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
    drawable_name=$1
    drawable_root="/Users/xuxin14/Desktop/DrawableMerge"
-   python /Users/xuxin14/PycharmProjects/pythonProject/scripts/FastReplaceDrawableScript.py $drawable_name $drawable_root $project_root 
+   python /Users/xuxin14/PycharmProjects/ArnoToolKit/scripts/fast_replace_drawable_script.py $drawable_name $drawable_root $project_root 
 }
 alias frd=FastReplaceDrawable
 
@@ -50,13 +48,13 @@ class DrawableFolder:
 
 script, drawable_name, drawable_root, project_root = argv
 default_suffix = ".png"
-logUtil.logi("替换的图标是 %s " % drawable_name)
+logUtil.i("替换的图标是 %s " % drawable_name)
 # 自动补齐png格式
 if not str(drawable_name).endswith(default_suffix):
     drawable_name = drawable_name + default_suffix
-    logUtil.logi("自动补全名称 %s " % drawable_name)
-logUtil.logi("当前路径是 %s " % project_root)
-logUtil.logi("替换路径是 %s " % drawable_root)
+    logUtil.i("自动补全名称 %s " % drawable_name)
+logUtil.i("当前路径是 %s " % project_root)
+logUtil.i("替换路径是 %s " % drawable_root)
 # region 常量定义
 
 drawable_dict = {
@@ -131,21 +129,21 @@ for i, folder in enumerate(drawableList):
         # print("路径打印 %s " % original_name)
         # print("路径打印目的地 %s " % need_file_name)
         os.rename(original_name, need_file_name)
-        logUtil.logi("找到文件 %s " % file)
+        logUtil.i("找到文件 %s " % file)
     except Exception as e:
-        logUtil.logw("%s 未找到对应文件 忽略" % get_type_string(folder.type))
+        logUtil.w("%s 未找到对应文件 忽略" % get_type_string(folder.type))
         continue
     # endregion
     # region 2. 强制替换
     else:
         try:
-            logUtil.logi("执行替换 %s" % dst_file_name)
+            logUtil.i("执行替换 %s" % dst_file_name)
             shutil.copyfile(need_file_name, dst_file_name)
         except Exception as e:
-            logUtil.loge("拷贝失败 %s" % e)
+            logUtil.e("拷贝失败 %s" % e)
             continue
         else:
-            logUtil.logd("替换图标素材完毕")
+            logUtil.d("替换图标素材完毕")
             # 替换后自动重命名
             os.rename(need_file_name, need_file_name + ".old")
     # endregion

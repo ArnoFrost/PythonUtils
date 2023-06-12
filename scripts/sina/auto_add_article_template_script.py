@@ -12,7 +12,7 @@ import wget
 # region zsh示例
 ''' 
 updateHb(){
-   python /Users/xuxin14/PycharmProjects/pythonProject/scripts/AutoAddArticleTemplateScript.py $1
+   python /Users/xuxin14/PycharmProjects/ArnoToolKit/scripts/auto_add_article_template_script.py $1
 }
 alias updatehb=updateHb
 '''
