@@ -1,7 +1,8 @@
 # 书签处理工具
+import json
+import time
 
 from bs4 import BeautifulSoup
-import time
 
 from scripts.common.bookmark.book_data import Bookmark
 
@@ -81,12 +82,13 @@ def extract_bookmarks(file_path):
     path_dict = {}
 
     def traverse(node, path):
-        new_path = path + [node.h3.string] if node.h3 and node.h3.string != "Bookmarks" else path  # ignore "Bookmarks"
-        path_dict[id(node)] = new_path
         if node.h3:  # this is a directory
+            new_path = path + [node.h3.string] if node.h3.string != "Bookmarks" else list(path)  # create a new instance
+            path_dict[id(node)] = new_path
             for child in node.find_all('dt', recursive=False):
                 traverse(child, new_path)
-        print(f"Node type: {'Directory' if node.h3 else 'Bookmark'}, ID: {id(node)}, Path: {path}")
+        else:  # this is a bookmark
+            path_dict[id(node)] = list(path)  # create a new instance for bookmark as well
 
     for dt in dt_tags:
         if dt.parent.name == 'dl':  # top level nodes
@@ -102,10 +104,10 @@ def extract_bookmarks(file_path):
             add_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(add_date)))
             url = dt.a['href']
             try:
-                path = path_dict[id(dt.parent)]  # dt.parent is the containing directory
+                path = path_dict[id(dt)]
             except KeyError:
-                print(f"KeyError for dt.parent id: {id(dt.parent)}, dt.parent: {dt.parent}")
-                raise
+                print(f"Could not find path for bookmark: {title}")
+                continue
             tags = ['#' + tag for tag in path]
             bookmark = Bookmark(title, url, add_date, tags)
             bookmarks[title] = bookmark
@@ -114,10 +116,104 @@ def extract_bookmarks(file_path):
     return bookmarks
 
 
-if __name__ == '__main__':
-    bookmark_file_path = "/Users/xuxin14/Desktop/favorites_2023_6_19.html"
-    bookmarks = extract_bookmarks(bookmark_file_path)
+def print_bookmarks(file_path):
+    with open(file_path, 'r') as f:
+        contents = f.read()
 
+    soup = BeautifulSoup(contents, 'lxml')
+    dt_tags = soup.find_all('dt')
+
+    # Build a dict for storing id-path pairs
+    path_dict = {}
+
+    def traverse(node, path):
+        if node.h3:  # this is a directory
+            new_path = path + [node.h3.string] if node.h3.string != "Bookmarks" else path  # ignore "Bookmarks"
+            path_dict[id(node)] = new_path
+            for child in node.find_all('dt', recursive=False):
+                traverse(child, new_path)
+        else:  # this is a bookmark
+            path_dict[id(node)] = path
+            # print the path for debugging
+            print(' -> '.join(path + [node.a.string if node.a else "None"]))
+
+    for dt in dt_tags:
+        if dt.parent.name == 'dl':  # top level nodes
+            traverse(dt, [])
+
+
+def save_bookmarks_to_json(bookmarks, file_path):
+    # 将 Bookmark 对象转换为可以序列化为 JSON 的字典
+    bookmarks_dict = {title: bookmark.__dict__ for title, bookmark in bookmarks.items()}
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(bookmarks_dict, f, ensure_ascii=False, indent=4)
+
+
+from bs4 import BeautifulSoup
+import csv
+import time
+
+
+def bookmarks_html_to_csv(html_file_path, csv_file_path):
+    with open(html_file_path, 'r') as f:
+        contents = f.read()
+
+    soup = BeautifulSoup(contents, 'lxml')
+    dt_tags = soup.find_all('dt')
+
+    # 创建一个字典存储每个节点及其对应的路径（标签）
+    path_dict = {}
+
+    def traverse(node, path):
+        if node.h3:  # 这是一个目录
+            new_path = path + [node.h3.string]
+            path_dict[id(node)] = new_path
+            for child in node.find_all('dt', recursive=False):
+                traverse(child, new_path)
+        else:  # 这是一个书签
+            path_dict[id(node)] = path
+
+    for dt in dt_tags:
+        if dt.parent.name == 'dl':  # 顶级节点
+            traverse(dt, [])
+
+    with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['Title', 'URL', 'Add_Date', 'Modify_Date', 'Tags']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for dt in dt_tags:
+            if dt.a:  # 这是一个书签
+                title = dt.a.string
+                url = dt.a['href']
+                add_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(dt.a.get('add_date'))))
+                modify_date = dt.a.get('last_modified')
+                if modify_date:
+                    modify_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(modify_date)))
+                try:
+                    tags = ','.join(path_dict[id(dt.parent)])
+                except:
+                    print(f"Could not find path for bookmark: {title}")
+                    continue
+                writer.writerow(
+                    {'Title': title, 'URL': url, 'Add_Date': add_date, 'Modify_Date': modify_date, 'Tags': tags})
+
+
+if __name__ == '__main__':
+    html_file_path = '/Users/xuxin14/Desktop/favorites_2023_6_21.html'
+    csv_file_path = '/Users/xuxin14/Desktop/favorites_2023_6_21.csv'
+    bookmarks_html_to_csv(html_file_path, csv_file_path)
+
+# if __name__ == '__main__':
+#     bookmark_file_path = "/Users/xuxin14/Desktop/favorites_2023_6_19.html"
+#     # bookmarks = extract_bookmarks(bookmark_file_path)
+#     # output_file_path = "/Users/xuxin14/Desktop/bookmarks.json"
+#     # save_bookmarks_to_json(bookmarks, output_file_path)
+#     # print("=======================")
+#     # print(f"Total bookmarks: {len(bookmarks)}")
+#
+#     print_bookmarks(bookmark_file_path)
 
 """
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -174,4 +270,3 @@ if __name__ == '__main__':
 </DL><p>
 
 """
-
