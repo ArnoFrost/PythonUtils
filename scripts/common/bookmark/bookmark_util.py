@@ -167,12 +167,13 @@ def bookmarks_html_to_csv(html_file_path, csv_file_path):
 
     def traverse(node, path):
         if node.h3:  # 这是一个目录
-            new_path = path + [node.h3.string]
+            new_path = path.copy()  # 创建path的副本
+            new_path.append(node.h3.string)  # 向新路径中添加当前目录
             path_dict[id(node)] = new_path
             for child in node.find_all('dt', recursive=False):
-                traverse(child, new_path)
+                traverse(child, new_path)  # 使用new_path，它包含了当前目录的名称
         else:  # 这是一个书签
-            path_dict[id(node)] = path
+            path_dict[id(node)] = path  # 在处理书签时，我们只需要记录它所在的路径，不需要再添加当前目录的名称
 
     for dt in dt_tags:
         if dt.parent.name == 'dl':  # 顶级节点
