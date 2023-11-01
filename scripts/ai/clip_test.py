@@ -1,11 +1,11 @@
 import os
-import pickle
 
 import torch
 from PIL import Image
 from googletrans import Translator
-from sklearn.metrics.pairwise import cosine_similarity
 from transformers import CLIPProcessor, CLIPModel
+
+from scripts.ai.VectorDatabase import VectorDatabase
 
 # 初始化模型处理器
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
@@ -22,66 +22,47 @@ def get_image_vector(image_path):
     image = Image.open(image_path)
     inputs = processor(text=["dummy"], images=image, return_tensors="pt", padding=True)
     outputs = model(**inputs)
-    return outputs.image_embeds.squeeze()
+    return outputs.image_embeds.squeeze().cpu().detach().numpy()
 
 
 def get_text_vector(text_description: list[str]):
-    dummy_image = torch.zeros(1, 3, 224, 224)  # Assuming the CLIP model expects 3x224x224 images
+    dummy_image = torch.zeros(1, 3, 224, 224)
     inputs = processor(text=text_description, images=dummy_image, return_tensors="pt", padding=True)
     outputs = model(**inputs)
     return outputs.text_embeds.squeeze().cpu().detach().numpy()
 
 
-def save_image_vectors(directory_path: str, save_path: str):
-    image_vectors = {}
+def save_image_vectors(directory_path: str):
+    first_vector = True
+    db = None
 
-    # 遍历指定目录下的所有图片
     for filename in os.listdir(directory_path):
-        if (filename.endswith(".jpg")
-                or filename.endswith(".png")
-                or filename.endswith(".jpeg")
-                or filename.endswith(".webp")):  # 可以根据需要添加更多图片格式
+        if filename.endswith((".jpg", ".png", ".jpeg", ".webp")):
             file_path = os.path.join(directory_path, filename)
             vector = get_image_vector(file_path)
-            image_vectors[file_path] = vector.cpu().detach().numpy()
 
-    # 保存为pickle文件
-    with open(save_path, 'wb') as handle:
-        pickle.dump(image_vectors, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            if first_vector:
+                dimension = len(vector)
+                db = VectorDatabase(dimension=dimension)
+                first_vector = False
+
+            db.add_vector(vector, file_path)
+
+    return db
 
 
-def search_images_by_text(text_description: list[str], vectors_path: str):
-    # 加载保存的向量数据
-    with open(vectors_path, 'rb') as handle:
-        saved_vectors = pickle.load(handle)
-
-    # 计算给定文本描述的向量
+def search_images_by_text(text_description, db):
     text_vector = get_text_vector(text_description)
-
-    # 计算相似度
-    similarities = {}
-    for image_path, image_vector in saved_vectors.items():
-        similarity = cosine_similarity([text_vector], [image_vector])[0][0]
-        similarities[image_path] = similarity
-
-    # 根据相似度排序
-    sorted_similarities = sorted(similarities.items(), key=lambda x: x[1], reverse=True)
-
-    return sorted_similarities
+    return db.search_vector(text_vector, k=len(db.file_paths))
 
 
 if __name__ == '__main__':
-    # 定义目录:
     directory_path = "/Users/xuxin14/Documents/Backup/头像/训练"
-    vectors_path = "/Users/xuxin14/Documents/Backup/头像/训练/vectors.pkl"
-    # 保存向量
-    save_image_vectors(directory_path, vectors_path)
+    db = save_image_vectors(directory_path)
 
-    # 搜索图片：
-    text_description = ["a photo of a cat"]
-    results = search_images_by_text(text_description, vectors_path)
+    text_description = ["a photo of a road"]
+    results = search_images_by_text(text_description, db)
 
-    # 打印最相似的5个图片
     for path, score in results[:5]:
         print(f"Image: {path}, Similarity: {score:.4f}")
 

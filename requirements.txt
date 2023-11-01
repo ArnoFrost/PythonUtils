@@ -4,3 +4,4 @@ transformers~=4.29.2
 mitmproxy~=10.0.0
 pyotp~=2.9.0
 beautifulsoup4~=4.12.2
+numpy~=1.24.3
