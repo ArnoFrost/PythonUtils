@@ -11,6 +11,14 @@ from scripts.ai.VectorDatabase import VectorDatabase
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 translator = Translator()
+directory_path = "/Users/xuxin14/Documents/Backup/头像/训练"
+DB_PATH = os.path.join(directory_path, "vector_db.pkl")
+
+# 初始化数据库
+db = VectorDatabase(db_file=DB_PATH, dimension=768)
+# 保存数据库
+if not os.path.exists(DB_PATH):
+    db.save_to_file()
 
 
 def translate_to_english(text):
@@ -32,23 +40,13 @@ def get_text_vector(text_description: list[str]):
     return outputs.text_embeds.squeeze().cpu().detach().numpy()
 
 
-def save_image_vectors(directory_path: str):
-    first_vector = True
-    db = None
-
+def save_image_vectors(db: VectorDatabase, directory_path: str):
     for filename in os.listdir(directory_path):
         if filename.endswith((".jpg", ".png", ".jpeg", ".webp")):
             file_path = os.path.join(directory_path, filename)
             vector = get_image_vector(file_path)
 
-            if first_vector:
-                dimension = len(vector)
-                db = VectorDatabase(dimension=dimension)
-                first_vector = False
-
             db.add_vector(vector, file_path)
-
-    return db
 
 
 def search_images_by_text(text_description: list[str], db):
@@ -57,11 +55,10 @@ def search_images_by_text(text_description: list[str], db):
 
 
 if __name__ == '__main__':
-    directory_path = "/Users/xuxin14/Documents/Backup/头像/训练"
-    db = save_image_vectors(directory_path)
-    topK = 5
+    save_image_vectors(db, directory_path)
 
-    text_description = ["长白山天池"]
+    topK = 2
+    text_description = ["车辆"]
     # 进行翻译
     translated_descriptions = translate_to_english(text_description)
     print(translated_descriptions)
