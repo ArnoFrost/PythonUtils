@@ -1,8 +1,10 @@
 import os
+
 import torch
 from PIL import Image
 from googletrans import Translator
 from transformers import CLIPProcessor, CLIPModel
+
 from scripts.ai.VectorDatabase import VectorDatabase
 
 # 常量定义
@@ -48,9 +50,13 @@ def save_image_vectors(engine: ClipSearchEngine, db: VectorDatabase, directory_p
             db.add_vector(vector, file_path)
 
 
-def search_images_by_text(engine: ClipSearchEngine, text_description: list[str], db: VectorDatabase):
+def search_images_by_text(engine: ClipSearchEngine, text_description: list[str], db: VectorDatabase,
+                          min_similarity_score=0):
     text_vector = engine.get_text_vector(text_description)
-    return db.search_vector(text_vector, k=len(db.file_paths))
+    results = db.search_vector(text_vector, k=len(db.file_paths))
+    # 过滤同时满足分数条件的选项
+    filtered_results = [result for result in results if result[1] <= min_similarity_score]
+    return filtered_results
 
 
 if __name__ == '__main__':
@@ -58,11 +64,12 @@ if __name__ == '__main__':
     db = initialize_or_load_db(DB_PATH)
     save_image_vectors(search_engine, db, DIRECTORY_PATH)
 
-    topK = 2
+    topK = 10
+    min_similarity_score = 1.7
     text_description = ["车辆"]
     translated_descriptions = search_engine.translate_to_english(text_description)
     print(translated_descriptions)
 
-    results = search_images_by_text(search_engine, translated_descriptions, db)
+    results = search_images_by_text(search_engine, translated_descriptions, db, min_similarity_score)
     for path, score in results[:topK]:
         print(f"Image: {path}, Similarity: {score:.4f}")
