@@ -13,10 +13,12 @@ DB_PATH = os.path.join(DIRECTORY_PATH, "vector_db.pkl")
 
 
 class ClipSearchEngine:
-    def __init__(self):
-        self.model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
-        self.processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
+    def __init__(self, model_name="openai/clip-vit-large-patch14", translate_from='zh-CN', translate_to='en'):
+        self.model = CLIPModel.from_pretrained(model_name)
+        self.processor = CLIPProcessor.from_pretrained(model_name)
         self.translator = Translator()
+        self.translate_from = translate_from
+        self.translate_to = translate_to
 
     def translate_to_english(self, text):
         translation = self.translator.translate(text, src='zh-CN', dest='en')
@@ -42,9 +44,9 @@ def initialize_or_load_db(db_path):
     return db
 
 
-def save_image_vectors(engine: ClipSearchEngine, db: VectorDatabase, directory_path: str):
+def save_image_vectors(engine: ClipSearchEngine, db: VectorDatabase, directory_path: str, file_types: tuple):
     for filename in os.listdir(directory_path):
-        if filename.endswith((".jpg", ".png", ".jpeg", ".webp")):
+        if filename.endswith(file_types):
             file_path = os.path.join(directory_path, filename)
             vector = engine.get_image_vector(file_path)
             db.add_vector(vector, file_path)
@@ -60,9 +62,11 @@ def search_images_by_text(engine: ClipSearchEngine, text_description: list[str],
 
 
 if __name__ == '__main__':
+    FILE_TYPES = (".jpg", ".png", ".jpeg", ".webp")
+
     search_engine = ClipSearchEngine()
     db = initialize_or_load_db(DB_PATH)
-    save_image_vectors(search_engine, db, DIRECTORY_PATH)
+    save_image_vectors(search_engine, db, DIRECTORY_PATH, FILE_TYPES)
 
     topK = 10
     min_similarity_score = 1.7
